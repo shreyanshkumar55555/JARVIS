@@ -1,7 +1,7 @@
-
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 const bodyParser = require('body-parser');
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
@@ -12,6 +12,9 @@ const API_KEY = process.env.GEMINI_API_KEY;
 app.use(cors());
 app.use(bodyParser.json());
 
+app.use(express.static(path.join(__dirname, "client"))); // or "build" if you renamed it
+
+// Gemini endpoint
 const genAI = new GoogleGenerativeAI(API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
@@ -34,8 +37,8 @@ app.post("/ask-gemini", async (req, res) => {
     }
 });
 
-app.get("/", (req, res) => {
-    res.send(" JARVIS Gemini Backend is running.");
+app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "client", "index.html")); // or "build"
 });
 
 app.listen(PORT, () => {
